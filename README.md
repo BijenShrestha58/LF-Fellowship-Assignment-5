@@ -7,11 +7,11 @@ This is a game made using Canvas API and TypeScript. The player must switch betw
 ## Getting Started
 
 ### Dependencies
--Any modern web browser, such as Chrome, Firefox
+- Any modern web browser, such as Chrome, Firefox
 
 ### Installing
--The repository can be cloned using git clone command.
--The dependencies must be installed by running npm install in the terminal
+- The repository can be cloned using git clone command.
+- The dependencies must be installed by running npm install in the terminal
 
 ### Executing Program
 - The program can be run on https://lf-fellowship-assignment-5.vercel.app/
