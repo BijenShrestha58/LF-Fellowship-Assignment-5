@@ -10,7 +10,7 @@ export default class Obstacle implements IObstacle {
   y: number;
   w: number;
   h: number;
-  constructor(x: number, y: number, h: number, w: number) {
+  constructor(x: number, y: number, w: number, h: number) {
     this.x = x;
     this.y = y;
     this.w = w;

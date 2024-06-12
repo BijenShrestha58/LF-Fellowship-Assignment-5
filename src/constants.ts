@@ -6,7 +6,7 @@ export const DIMENSIONS = {
 export const SPEED = 5;
 
 export const PLAYER_DIMENSIONS = {
-  PLAYER_WIDTH: 150,
+  PLAYER_WIDTH: 100,
   PLAYER_HEIGHT: 150,
 };
 
