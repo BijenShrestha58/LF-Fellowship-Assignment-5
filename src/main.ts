@@ -24,6 +24,9 @@ const playerImage = document.getElementById("player-image") as HTMLImageElement;
 const obstacleImage = document.getElementById(
   "obstacle1-image"
 ) as HTMLImageElement;
+const backgroundImage = document.getElementById(
+  "background-image"
+) as HTMLImageElement;
 
 canvas.width = DIMENSIONS.CANVAS_WIDTH;
 canvas.height = DIMENSIONS.CANVAS_HEIGHT;
@@ -64,7 +67,9 @@ const player = new Player(
 
 let targetX = player.x;
 let score = 0;
-let gameState = GAME_STATE.START; // Using the GAME_STATE enum
+let gameState = GAME_STATE.START;
+let bgY1 = 0;
+let bgY2 = -DIMENSIONS.CANVAS_HEIGHT;
 
 function drawStartScreen() {
   ctx.fillStyle = "#000";
@@ -107,9 +112,32 @@ function drawGameOverScreen() {
 }
 
 function drawGame() {
-  ctx.fillStyle = "#000";
   ctx.clearRect(0, 0, DIMENSIONS.CANVAS_WIDTH, DIMENSIONS.CANVAS_HEIGHT);
-  ctx.fillRect(0, 0, DIMENSIONS.CANVAS_WIDTH, DIMENSIONS.CANVAS_HEIGHT);
+
+  bgY1 += SPEED / 2;
+  bgY2 += SPEED / 2;
+
+  if (bgY1 >= DIMENSIONS.CANVAS_HEIGHT) {
+    bgY1 = bgY2 - DIMENSIONS.CANVAS_HEIGHT;
+  }
+  if (bgY2 >= DIMENSIONS.CANVAS_HEIGHT) {
+    bgY2 = bgY1 - DIMENSIONS.CANVAS_HEIGHT;
+  }
+
+  ctx.drawImage(
+    backgroundImage,
+    0,
+    bgY1,
+    DIMENSIONS.CANVAS_WIDTH,
+    DIMENSIONS.CANVAS_HEIGHT
+  );
+  ctx.drawImage(
+    backgroundImage,
+    0,
+    bgY2,
+    DIMENSIONS.CANVAS_WIDTH,
+    DIMENSIONS.CANVAS_HEIGHT
+  );
 
   ctx.strokeStyle = "#fff";
 
@@ -126,7 +154,7 @@ function drawGame() {
     obstacle.y = obstacle.y + SPEED;
 
     if (obstacle.y > DIMENSIONS.CANVAS_HEIGHT) {
-      obstacle.y = getRandomInt(-800, -100);
+      obstacle.y = getRandomInt(-1000, -100);
       obstacleArray.forEach((obsCheck) => {
         if (obstacle === obsCheck) {
           return;
@@ -201,14 +229,14 @@ window.addEventListener("keypress", (e) => {
       }
       break;
     case "a":
-      if (gameState === GAME_STATE.RUNNING && targetX - DIFFERENCE > 0) {
+      if (gameState === GAME_STATE.RUNNING && targetX - DIFFERENCE > 100) {
         targetX -= DIFFERENCE;
       }
       break;
     case "d":
       if (
         gameState === GAME_STATE.RUNNING &&
-        targetX + DIFFERENCE < DIMENSIONS.CANVAS_WIDTH
+        targetX + DIFFERENCE < DIMENSIONS.CANVAS_WIDTH - 100
       ) {
         targetX += DIFFERENCE;
       }
