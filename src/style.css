@@ -12,3 +12,7 @@ canvas {
 #obstacle1-image {
   display: none;
 }
+
+#background-image {
+  display: none;
+}

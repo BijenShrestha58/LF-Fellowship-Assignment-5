@@ -6,17 +6,12 @@ import {
   LANE_POSITION,
   DIFFERENCE,
   SIDE_SPEED,
+  GAME_STATE,
 } from "./constants";
 import { getRandomInt } from "./utils/common";
 import Player from "./classes/Player";
 import Obstacle from "./classes/Obstacle";
 import { collisionDetection } from "./utils/collision";
-
-export enum GAME_STATE {
-  START = "START",
-  RUNNING = "RUNNING",
-  END = "END",
-}
 
 const canvas = document.querySelector<HTMLCanvasElement>("#canvas")!;
 const ctx = canvas.getContext("2d")!;
@@ -33,15 +28,15 @@ canvas.height = DIMENSIONS.CANVAS_HEIGHT;
 
 const obstacle1 = new Obstacle(
   LANE_POSITION.LEFT_LANE,
-  getRandomInt(-PLAYER_DIMENSIONS.PLAYER_HEIGHT, 0),
+  getRandomInt(PLAYER_DIMENSIONS.PLAYER_HEIGHT * -2, 0),
   PLAYER_DIMENSIONS.PLAYER_WIDTH,
   PLAYER_DIMENSIONS.PLAYER_HEIGHT
 );
 const obstacle2 = new Obstacle(
   LANE_POSITION.MID_LANE,
   getRandomInt(
-    -PLAYER_DIMENSIONS.PLAYER_HEIGHT * 3,
-    -PLAYER_DIMENSIONS.PLAYER_HEIGHT * 2
+    PLAYER_DIMENSIONS.PLAYER_HEIGHT * -7,
+    PLAYER_DIMENSIONS.PLAYER_HEIGHT * -5
   ),
   PLAYER_DIMENSIONS.PLAYER_WIDTH,
   PLAYER_DIMENSIONS.PLAYER_HEIGHT
@@ -49,8 +44,8 @@ const obstacle2 = new Obstacle(
 const obstacle3 = new Obstacle(
   LANE_POSITION.RIGHT_LANE,
   getRandomInt(
-    -PLAYER_DIMENSIONS.PLAYER_HEIGHT * 5,
-    -PLAYER_DIMENSIONS.PLAYER_HEIGHT * 4
+    PLAYER_DIMENSIONS.PLAYER_HEIGHT * -5,
+    PLAYER_DIMENSIONS.PLAYER_HEIGHT * -3
   ),
   PLAYER_DIMENSIONS.PLAYER_WIDTH,
   PLAYER_DIMENSIONS.PLAYER_HEIGHT
@@ -67,9 +62,13 @@ const player = new Player(
 
 let targetX = player.x;
 let score = 0;
+let highScore = localStorage.getItem("highScore")
+  ? parseInt(localStorage.getItem("highScore")!)
+  : 0;
 let gameState = GAME_STATE.START;
 let bgY1 = 0;
 let bgY2 = -DIMENSIONS.CANVAS_HEIGHT;
+let currentSpeed = SPEED;
 
 function drawStartScreen() {
   ctx.fillStyle = "#000";
@@ -95,12 +94,17 @@ function drawGameOverScreen() {
   ctx.fillText(
     "Game Over",
     DIMENSIONS.CANVAS_WIDTH / 2,
-    DIMENSIONS.CANVAS_HEIGHT / 2 - 20
+    DIMENSIONS.CANVAS_HEIGHT / 2 - 60
   );
   ctx.fillText(
     `Score: ${score}`,
     DIMENSIONS.CANVAS_WIDTH / 2,
-    DIMENSIONS.CANVAS_HEIGHT / 2 + 20
+    DIMENSIONS.CANVAS_HEIGHT / 2
+  );
+  ctx.fillText(
+    `High Score: ${highScore}`,
+    DIMENSIONS.CANVAS_WIDTH / 2,
+    DIMENSIONS.CANVAS_HEIGHT / 2 + 30
   );
   ctx.fillText(
     "Press Enter to Restart",
@@ -114,8 +118,8 @@ function drawGameOverScreen() {
 function drawGame() {
   ctx.clearRect(0, 0, DIMENSIONS.CANVAS_WIDTH, DIMENSIONS.CANVAS_HEIGHT);
 
-  bgY1 += SPEED / 2;
-  bgY2 += SPEED / 2;
+  bgY1 += currentSpeed / 2;
+  bgY2 += currentSpeed / 2;
 
   if (bgY1 >= DIMENSIONS.CANVAS_HEIGHT) {
     bgY1 = bgY2 - DIMENSIONS.CANVAS_HEIGHT;
@@ -151,7 +155,7 @@ function drawGame() {
       obstacle.h
     );
 
-    obstacle.y = obstacle.y + SPEED;
+    obstacle.y = obstacle.y + currentSpeed;
 
     if (obstacle.y > DIMENSIONS.CANVAS_HEIGHT) {
       obstacle.y = getRandomInt(-1000, -100);
@@ -160,11 +164,12 @@ function drawGame() {
           return;
         }
         if (obsCheck.y - obstacle.y < 2 * PLAYER_DIMENSIONS.PLAYER_HEIGHT) {
-          obstacle.y -= 2 * PLAYER_DIMENSIONS.PLAYER_HEIGHT;
+          obstacle.y -= 2 * PLAYER_DIMENSIONS.PLAYER_HEIGHT + 50;
         }
       });
 
       score += 1;
+      currentSpeed = SPEED + Math.floor(score / 10);
     }
   });
 
@@ -180,11 +185,16 @@ function drawGame() {
   if (collisionDetection(player, obstacleArray)) {
     gameState = GAME_STATE.END;
     console.log("Game Over!");
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("highScore", highScore.toString());
+    }
     return;
   }
   ctx.fillStyle = "#fff";
   ctx.font = "20px Arial";
   ctx.fillText(`Score: ${score}`, 60, 20);
+  ctx.fillText(`High Score: ${highScore}`, 60, 50);
 
   requestAnimationFrame(gameLoop);
 }
