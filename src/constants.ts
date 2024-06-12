@@ -23,3 +23,9 @@ export const LANE_POSITION = {
 export const DIFFERENCE = LANE_POSITION.MID_LANE - LANE_POSITION.LEFT_LANE;
 
 export const SIDE_SPEED = 10;
+
+export enum GAME_STATE {
+  START = "START",
+  RUNNING = "RUNNING",
+  END = "END",
+}
